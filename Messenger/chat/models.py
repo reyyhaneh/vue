@@ -1,7 +1,9 @@
+import jdatetime
 from django.db import models
 from rest_framework.exceptions import ValidationError
 
 from account.models import User
+from jdatetime import datetime as jdatetime
 
 
 class Chat(models.Model):
@@ -19,3 +21,7 @@ class Message(models.Model):
     sender = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='sent_messages', null=True)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def jalali_time(self):
+        shamsi_date = jdatetime.fromgregorian(datetime=self.created_at)
+        return shamsi_date.strftime("%H:%M")

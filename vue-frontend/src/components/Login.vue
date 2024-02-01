@@ -36,7 +36,7 @@ export default {
         const response = await axios.post('http://localhost:8000/api/login/', this.form);
 
         if (response.data.hasOwnProperty('access')) {
-          const token = response.data.access;
+          const token =response.data.access;
           const uid = response.data.uid;
           localStorage.setItem('jwtToken', token);
           localStorage.setItem('uid', token);

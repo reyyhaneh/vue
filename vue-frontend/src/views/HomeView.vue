@@ -12,6 +12,7 @@
 import Navbar from '@/components/Navbar.vue'; // Adjust the path based on your project structure
 import ChatList from '@/components/ChatList.vue';
 import ChatDisplay from '@/components/ChatDisplay.vue';
+import axios from 'axios';
 
 export default {
   components: {
@@ -39,8 +40,18 @@ export default {
     };
   },
   methods: {
-    selectChat(chat) {
-      this.selectedChat = chat;
+    async selectChat(chat) {
+       const token = localStorage.getItem('jwtToken');
+
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+              const response = await axios.get('http://localhost:8000/api/chat/'+chat.id+'/',{headers});
+      this.selectedChat = response.data;
+      console.log(this.selectedChat)
+      console.log(this.selectedChat)
+      console.log(this.selectedChat)
+
     },
   },
 };

@@ -71,6 +71,11 @@ class ChatViewSet(mixins.ListModelMixin,
                     contact_name = u.get_full_name()
         serializer = self.get_serializer(instance).data
         serializer['name'] =contact_name
+
+        for msg in serializer['messages']:
+            msg['sent_by_me'] = False
+            if msg['sender'] ==request.user.id:
+                msg['sent_by_me'] = True
         return Response(serializer)
 
 

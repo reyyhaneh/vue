@@ -11,7 +11,7 @@
       </div>
     </div>
   </template>
-  
+
   <script>
   export default {
     props: {
@@ -19,7 +19,7 @@
     },
   };
   </script>
-  
+
   <style scoped>
   .chat-display {
     padding: 20px;
@@ -32,6 +32,5 @@
     grid-column-start: 4;
     width: 76%;
   }
-  
+
   </style>
-  
