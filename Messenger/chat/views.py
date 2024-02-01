@@ -48,11 +48,13 @@ class ChatViewSet(mixins.ListModelMixin,
         for data in serializer:
             for uid in data['users']:
                 if uid!=request.user.id:
+                    contact_user = UserMainInfoSerializer(User.objects.get(id=uid)).data
                     try:
                         contact_name = Contact.objects.get(contact__id=uid, user=request.user).contact_name
                     except:
                         contact_name = User.objects.get(id=uid).get_full_name()
                     data['name'] = contact_name
+                    data['contact_user'] = contact_user
 
         return Response(serializer)
 
@@ -66,15 +68,14 @@ class ChatViewSet(mixins.ListModelMixin,
         contact_name = None
         for u in instance.users.all():
             if u != request.user:
-                contact = ContactRetrieveSerializer(Contact.objects.get(contact=u,user=request.user)).data
-
+                contact_user = UserMainInfoSerializer(u).data
                 try:
                     contact_name = Contact.objects.get(contact=u,user=request.user).contact_name
                 except:
                     contact_name = u.get_full_name()
         serializer = self.get_serializer(instance).data
         serializer['name'] =contact_name
-        serializer['contact'] =contact
+        serializer['contact_user'] =contact_user
 
         for msg in serializer['messages']:
             msg['sent_by_me'] = False

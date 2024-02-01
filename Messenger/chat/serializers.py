@@ -8,6 +8,10 @@ from .models import Chat, Message
 
 
 class ChatSerializer(serializers.ModelSerializer):
+    last_message = serializers.SerializerMethodField()
+
+    def get_last_message(self,obj):
+        return MessageSerializer(obj.message_set.order_by('-id').first()).data
     class Meta:
         model = Chat
         fields = '__all__'

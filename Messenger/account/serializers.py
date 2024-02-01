@@ -5,17 +5,23 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import User, Contact
 
 
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'phone', 'username', 'first_name', 'last_name']
+        fields = '__all__'
 
 
 class UserMainInfoSerializer(UserSerializer):
+    image = serializers.SerializerMethodField()
+
+    def get_image(self, obj):
+        if obj.image:
+            return 'http://localhost:8000' + obj.image.url
+        return None
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name','image']
+        fields = ['id', 'username', 'first_name', 'last_name', 'image']
 
 
 class RegisterSerializer(UserSerializer):
@@ -23,7 +29,7 @@ class RegisterSerializer(UserSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'phone', 'username', 'password','first_name','last_name','bio','image']
+        fields = ['id', 'phone', 'username', 'password', 'first_name', 'last_name', 'bio', 'image']
 
     def create(self, validated_data):
         if User.objects.filter(phone=validated_data['phone']).exists():
@@ -33,6 +39,7 @@ class RegisterSerializer(UserSerializer):
 
         user = User.objects.create_user(**validated_data)
         return user
+
 
 class ContactSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), required=False)
@@ -62,9 +69,12 @@ class ContactSerializer(serializers.ModelSerializer):
             raise ValidationError({'message': 'contact name already exists'}, code=400)
         validated_data.pop('contact')
         return super().update(instance, validated_data)
+
+
 class ContactRetrieveSerializer(ContactSerializer):
     user = serializers.SerializerMethodField()
-    def get_user(self,obj):
+
+    def get_user(self, obj):
         return UserMainInfoSerializer(obj.user).data
 
     class Meta:
