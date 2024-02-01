@@ -15,7 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
 class UserMainInfoSerializer(UserSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name']
+        fields = ['id', 'username', 'first_name', 'last_name','image']
 
 
 class RegisterSerializer(UserSerializer):
@@ -62,3 +62,11 @@ class ContactSerializer(serializers.ModelSerializer):
             raise ValidationError({'message': 'contact name already exists'}, code=400)
         validated_data.pop('contact')
         return super().update(instance, validated_data)
+class ContactRetrieveSerializer(ContactSerializer):
+    user = serializers.SerializerMethodField()
+    def get_user(self,obj):
+        return UserMainInfoSerializer(obj.user).data
+
+    class Meta:
+        model = Contact
+        fields = '__all__'

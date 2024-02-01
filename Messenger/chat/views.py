@@ -5,6 +5,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import viewsets, mixins
 
 from account.models import Contact
+from account.serializers import ContactSerializer, ContactRetrieveSerializer
 from .models import User, Chat, Message
 from .serializers import *
 
@@ -65,12 +66,15 @@ class ChatViewSet(mixins.ListModelMixin,
         contact_name = None
         for u in instance.users.all():
             if u != request.user:
+                contact = ContactRetrieveSerializer(Contact.objects.get(contact=u,user=request.user)).data
+
                 try:
                     contact_name = Contact.objects.get(contact=u,user=request.user).contact_name
                 except:
                     contact_name = u.get_full_name()
         serializer = self.get_serializer(instance).data
         serializer['name'] =contact_name
+        serializer['contact'] =contact
 
         for msg in serializer['messages']:
             msg['sent_by_me'] = False

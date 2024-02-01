@@ -48,10 +48,6 @@ export default {
       };
               const response = await axios.get('http://localhost:8000/api/chat/'+chat.id+'/',{headers});
       this.selectedChat = response.data;
-      console.log(this.selectedChat)
-      console.log(this.selectedChat)
-      console.log(this.selectedChat)
-
     },
   },
 };
