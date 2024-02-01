@@ -1,4 +1,3 @@
-<!-- ChatDisplay.vue -->
 <template>
     <div class="chat-display">
       <div v-if="selectedChat">
@@ -30,8 +29,6 @@
     position: absolute;
     grid-column-start: 4;
     width:76%;
-
-
   }
   </style>
   

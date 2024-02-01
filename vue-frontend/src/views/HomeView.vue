@@ -22,8 +22,8 @@ export default {
   data() {
     return {
       chats: [
-        { id: 1, name: 'Chat 1', content: 'Chat 1 content...' },
-        { id: 2, name: 'Chat 2', content: 'Chat 2 content...' },
+        {id: 1 ,name: "name",profilePic: "../assets/profile.png", unseenMessages: 0},
+        {id: 2 ,name: "John Doe",profilePic: "../assets/profile.png", unseenMessages: 3},
         // Add more chat objects as needed
       ],
       selectedChat: null,
