@@ -3,8 +3,17 @@
     <div class="chat-list">
       <input v-model="searchQuery" placeholder="Search..." class="search-bar" />
       <ul>
+        
         <li v-for="chat in filteredChats" :key="chat.id" @click="selectChat(chat)">
-          {{ chat.name }}
+        <div class="chat-item">
+        <router-link to="/profile">
+        <img src="../assets/profile.png" alt="Profile Picture" class="profile-pic" />
+        </router-link>          <div class="chat-details">
+            <div class="chat-name">{{ chat.name }}</div>
+            <div class="unseen-messages" v-if="chat.unseenMessages > 0">{{ chat.unseenMessages }} unseen messages</div>
+          </div>
+        </div>
+            
         </li>
       </ul>
     </div>
@@ -14,6 +23,7 @@
   import axios from 'axios';
   
   export default {
+
     props: {
       // Remove the 'chats' prop
     },
