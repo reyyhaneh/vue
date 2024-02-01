@@ -1,131 +1,154 @@
 <template>
-    <form @submit.prevent="submitForm" class="signup-form">
-      <label for="firstname">First Name:</label>
-      <input v-model="form.firstname" name="firstname" type="text" required />
-  
-      <label for="lastname">Last Name:</label>
-      <input v-model="form.lastname" name="lastname" type="text" required />
-  
-      <label for="phone">Phone:</label>
-      <input v-model="form.phone" name="phone" type="text" required />
-  
-      <label for="username">Username:</label>
-      <input v-model="form.username" name="username" type="text" required />
-  
-      <label for="password">Password:</label>
-      <input v-model="form.password" name="password" type="password" required />
-  
-      <label for="image">Image:</label>
-      <input v-model="form.image" name="image" type="text" />
-  
-      <label for="bio">Bio:</label>
-      <textarea v-model="form.bio" name="bio" required></textarea>
+  <form @submit.prevent="submitForm" class="signup-form">
+    <label for="first_name">First Name:</label>
+    <input v-model="form.first_name" name="first_name" type="text" required />
 
-      <div v-if="!isUsernameUnique">
+    <label for="last_name">Last Name:</label>
+    <input v-model="form.last_name" name="last_name" type="text" required />
+
+    <label for="phone">Phone:</label>
+    <input v-model="form.phone" name="phone" type="text" required :class="{ 'error': !isPhoneValid }" />
+    <div v-if="!isPhoneValid">
+      <p class="error-message">Phone must be exactly 13 digits long, start with 0, and consist of digits only.</p>
+    </div>
+
+    <label for="username">Username:</label>
+    <input v-model="form.username" name="username" type="text" required :class="{ 'error': !isUsernameUnique }" />
+    <div v-if="!isUsernameUnique">
       <p class="error-message">Username is already taken. Please choose a different one.</p>
-      </div>
-      <div v-if="!isPhoneUnique">
-      <p class="error-message">Phone number is already in use. Please enter a different one.</p>
-      </div>
-  
-      <button type="submit">Sign Up</button>
-      <router-link to="/login" class="login-link">Already have an account? Log In</router-link>
+    </div>
 
-    </form>
-  </template>
-  
-  <script>
-  import axios from 'axios';
-  
-  export default {
-    data() {
-      return {
-        form: {
-          firstname: '',
-          lastname: '',
-          phone: '',
-          username: '',
-          password: '',
-          image: null,
-          bio: '',
-        },
-        isUsernameUnique: true,
-        isPhoneUnique: true,
-      };
-    },
-    methods: {
+    <label for="password">Password:</label>
+    <input v-model="form.password" name="password" type="password" required :class="{ 'error': isPasswordInvalid }" />
+    <div v-if="isPasswordInvalid">
+      <p class="error-message">Password must be at least 8 characters long.</p>
+    </div>
+
+    <label for="image">Image:</label>
+    <input ref="imageInput" name="image" type="file" accept="image/*" @change="handleImageChange" :class="{ 'error': !isImageValid }" />
+    <div v-if="!isImageValid">
+      <p class="error-message">Please select a valid image file.</p>
+    </div>
+
+    <label for="bio">Bio:</label>
+    <textarea v-model="form.bio" name="bio" required></textarea>
+
+    <button type="submit" :disabled="loading">Sign Up</button>
+    <router-link to="/login" class="login-link">Already have an account? Log In</router-link>
+  </form>
+</template>
+
+<script>
+import axios from 'axios';
+
+export default {
+  data() {
+    return {
+      form: {
+        first_name: '',
+        last_name: '',
+        phone: '',
+        username: '',
+        password: '',
+        image: null,
+        bio: '',
+      },
+      isUsernameUnique: true,
+      isPhoneUnique: true,
+      isPasswordInvalid: false,
+      isPhoneValid: true,
+      isImageValid: true,
+      loading: false,
+    };
+  },
+  methods: {
     async checkUsernameUniqueness() {
-      // Make a request to the backend API to check the uniqueness of the username
-      // Assume your backend API endpoint is /api/check-username
-
       try {
-        const response = await this.$axios.post('/api/check-username', {
+        this.loading = true;
+        const response = await axios.post('/api/checkusername/', {
           username: this.form.username,
         });
 
-        // Check the response from the backend
-        this.isUsernameUnique = response.data.isUnique;
+        this.isUsernameUnique = response.data.unique;
       } catch (error) {
         console.error('Error checking username uniqueness:', error);
+      } finally {
+        this.loading = false;
       }
     },
     async checkPhoneUniqueness() {
-      // Make a request to the backend API to check the uniqueness of the phone number
-      // Assume your backend API endpoint is /api/check-phone
-
       try {
-        const response = await this.$axios.post('/api/check-phone', {
-          phone: this.form.phone,
-        });
+        this.loading = true;
+        if (/^0\d{10}$/.test(this.form.phone) && /^\d+$/.test(this.form.phone)) {
+          const response = await axios.post('/api/checkphone/', {
+            phone: this.form.phone,
+          });
 
-        // Check the response from the backend
-        this.isPhoneUnique = response.data.isUnique;
+          this.isPhoneUnique = response.data.unique;
+        } else {
+          this.isPhoneValid = false;
+        }
       } catch (error) {
         console.error('Error checking phone uniqueness:', error);
+      } finally {
+        this.loading = false;
+      }
+    },
+    validatePassword() {
+      this.isPasswordInvalid = this.form.password.length < 8;
+    },
+    handleImageChange(event) {
+      this.form.image = event.target.files[0];
+      this.validateImage();
+    },
+    validateImage() {
+      if (this.form.image && this.form.image.type.startsWith('image/')) {
+        this.isImageValid = true;
+      } else {
+        this.isImageValid = false;
       }
     },
     async submitForm() {
-      // Check uniqueness before submitting the form
-      await this.checkUsernameUniqueness();
-      await this.checkPhoneUniqueness();
+      this.checkUsernameUniqueness();
+      this.checkPhoneUniqueness();
+      this.validatePassword();
+      this.validateImage();
 
-      // Proceed with form submission if both username and phone are unique
-      if (this.isUsernameUnique && this.isPhoneUnique) {
+      if (this.isUsernameUnique && this.isPhoneUnique && !this.isPasswordInvalid && this.isImageValid) {
         try {
-          // Make a request to the backend to get the JWT token
-          const response = await this.$axios.post('/api/register', {
-            firstname: this.form.firstname,
-            lastname: this.form.lastname,
-            phone: this.form.phone,
-            username: this.form.username,
-            password: this.form.password,
-            image: this.form.image,
-            bio: this.form.bio,
-            
-          });
+          this.loading = true;
+           const formData = new FormData();
+      formData.append('first_name', this.form.first_name);
+      formData.append('last_name', this.form.last_name);
+      formData.append('phone', this.form.phone);
+      formData.append('username', this.form.username);
+      formData.append('password', this.form.password);
+      formData.append('image', this.form.image);
+      formData.append('bio', this.form.bio);
 
-          // Assuming the backend returns a JWT token upon successful registration
-          const jwtToken = response.data.token;
+      const response = await axios.post('/api/register/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
-          // Store the token in localStorage (or use a more secure storage mechanism)
-          localStorage.setItem('jwtToken', jwtToken);
+          // const jwtToken = response.data.token;
+          // localStorage.setItem('jwtToken', jwtToken);
 
-          // Redirect to the user's dashboard or home page
-          this.$router.push('/home');
+          this.$router.push('/login');
         } catch (error) {
           console.error('Error registering user:', error);
+        } finally {
+          this.loading = false;
         }
       } else {
-        // Show a message to the user about non-unique username or phone
-        console.error('Username or phone is not unique. Please choose different values.');
+        console.error('Form validation failed. Please correct the errors.');
       }
     },
-    },
-  };
-  </script>
-  
+  },
+};
+</script>
 
-  
 <style scoped>
 .signup-form {
   max-width: 400px;
@@ -158,8 +181,9 @@ button {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  margin:5px;
+  margin: 5px;
 }
+
 .login-link {
   display: block;
   margin-top: 10px;
@@ -174,7 +198,12 @@ button {
 button:hover {
   background-color: #0056b3;
 }
+
 .error-message {
-  color: #ff0000; 
+  color: #ff0000;
+}
+
+input.error {
+  border: 1px solid #ff0000;
 }
 </style>

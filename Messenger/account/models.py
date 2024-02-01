@@ -36,8 +36,8 @@ class User(AbstractUser):
     image = models.ImageField(null=True,blank=True)
     bio = models.TextField(blank=True)
 
-    USERNAME_FIELD = 'phone'
-    REQUIRED_FIELDS = ['username']
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['phone']
     objects = CustomUserManager()
     def get_full_name(self):
         return self.first_name + ' ' + self.last_name

@@ -19,6 +19,15 @@ export default {
     ChatList,
     ChatDisplay,
   },
+   created() {
+    // Check if the token is in localStorage
+    const jwtToken = localStorage.getItem('jwtToken');
+
+    // If the token is not present, redirect to the login page
+    if (!jwtToken) {
+      this.$router.push('/login');
+    }
+  },
   data() {
     return {
       chats: [

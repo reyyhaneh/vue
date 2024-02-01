@@ -15,4 +15,8 @@ urlpatterns = [
     path('api/login/', LoginView.as_view(), name='login'),
     path('api/users/', include(user_router.urls)),
     path('api/users/<int:user_id>/contacts/', include(contact_router.urls), name='contact-list'),
+
+    path('api/checkusername/', CheckUsernameAPI.as_view()),
+    path('api/checkphone/', CheckPhoneAPI.as_view()),
+
 ]

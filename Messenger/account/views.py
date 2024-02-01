@@ -15,6 +15,7 @@ def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
 
     return {
+        'uid':user.id   ,
         'refresh': str(refresh),
         'access': str(refresh.access_token),
     }
@@ -25,15 +26,15 @@ class LoginView(APIView):
 
     def post(self, request):
         print(1)
-        phone = request.data["phone"]
+        username = request.data["username"]
         password = request.data["password"]
 
-        user = authenticate(phone=phone, password=password)
+        user = authenticate(username=username, password=password)
         if user:
             return Response(get_tokens_for_user(user))
-        if User.objects.filter(phone=phone).exists():
+        if User.objects.filter(username=username).exists():
             return Response({"error": "password is incorrect"}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
-        return Response({"error": "user with this phone number does not exist"},
+        return Response({"error": "user with this username does not exist"},
                         status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
 
 
@@ -80,3 +81,16 @@ class ContactViewSet(viewsets.ModelViewSet):
         return Contact.objects.filter(user=self.request.user)
 
     serializer_class = ContactSerializer
+
+
+class CheckUsernameAPI(APIView):
+    permission_classes = [AllowAny]
+    def post(self,request):
+        return Response({'unique':User.objects.filter(username=request.data['username']).exists() == False})
+
+
+
+class CheckPhoneAPI(APIView):
+    permission_classes = [AllowAny]
+    def post(self,request):
+        return Response({'unique':User.objects.filter(phone=request.data['phone']).exists() == False})

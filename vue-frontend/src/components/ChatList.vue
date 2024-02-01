@@ -3,7 +3,7 @@
     <div class="chat-list">
       <input v-model="searchQuery" placeholder="Search..." class="search-bar" />
       <ul>
-        
+
         <li v-for="chat in filteredChats" :key="chat.id" @click="selectChat(chat)">
         <div class="chat-item">
         <router-link to="/profile">
@@ -13,15 +13,15 @@
             <div class="unseen-messages" v-if="chat.unseenMessages > 0">{{ chat.unseenMessages }} unseen messages</div>
           </div>
         </div>
-            
+
         </li>
       </ul>
     </div>
   </template>
-  
+
   <script>
   import axios from 'axios';
-  
+
   export default {
 
     props: {
@@ -46,19 +46,21 @@
       selectChat(chat) {
         this.$emit('select-chat', chat);
       },
-      fetchChats() {
-          const headers = {
-          Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzExOTkwMzcyLCJpYXQiOjE3MDY4MDYzNzIsImp0aSI6IjA3M2FhMzVmZDM5MzRhODBiYzdlOTE2NjY3MzlhNDk0IiwidXNlcl9pZCI6MX0.Y3_X9-XnQ7jQ7H2uNrfTliL3ZA84hjhWIsbetkoahRw`,
-        };
-        // Make a GET request to fetch chats from the Django API
-        axios.get('http://localhost:8000/api/chat/', { headers })
+     fetchChats() {
+      const token = localStorage.getItem('jwtToken');
+
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+      // Make a GET request to fetch chats from the Django API
+      axios.get('http://localhost:8000/api/chat/', {headers})
           .then(response => {
             this.chats = response.data;
           })
           .catch(error => {
             console.error('Error fetching chats:', error);
           });
-      },
+    },
     },
     mounted() {
       // Fetch chats when the component is mounted

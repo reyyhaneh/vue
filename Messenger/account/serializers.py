@@ -20,11 +20,10 @@ class UserMainInfoSerializer(UserSerializer):
 
 class RegisterSerializer(UserSerializer):
     password = serializers.CharField(write_only=True)
-    confirm_password = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
-        fields = ['id', 'phone', 'username', 'password', 'confirm_password']
+        fields = ['id', 'phone', 'username', 'password','first_name','last_name','bio','image']
 
     def create(self, validated_data):
         if User.objects.filter(phone=validated_data['phone']).exists():
@@ -32,8 +31,6 @@ class RegisterSerializer(UserSerializer):
         elif User.objects.filter(phone=validated_data['username']).exists():
             raise serializers.ValidationError('This username is already registered')
 
-        if validated_data['password'] != validated_data.pop('confirm_password'):
-            raise serializers.ValidationError('Password and confirm password are not equal')
         user = User.objects.create_user(**validated_data)
         return user
 
