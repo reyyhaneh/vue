@@ -78,6 +78,8 @@ class ContactViewSet(viewsets.ModelViewSet):
         super().check_permissions(request)
 
     def get_queryset(self):
+        if self.action in ['get', 'list','retrieve']:
+            self.serializer_class=ContactRetrieveSerializer
         return Contact.objects.filter(user=self.request.user)
 
     serializer_class = ContactSerializer
