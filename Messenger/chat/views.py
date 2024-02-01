@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import viewsets, mixins
 
+from account.models import Contact
 from .models import User, Chat, Message
 from .serializers import *
 
@@ -34,13 +35,43 @@ class ChatViewSet(mixins.ListModelMixin,
         if mutable != None:
             data._mutable = mutable
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True).data
+        for data in serializer:
+            for uid in data['users']:
+                if uid!=request.user.id:
+                    try:
+                        contact_name = Contact.objects.get(contact__id=uid, user=request.user).contact_name
+                    except:
+                        contact_name = User.objects.get(id=uid).get_full_name()
+                    data['name'] = contact_name
+
+        return Response(serializer)
+
     def create(self, request, *args, **kwargs):
         self.add_curr_user()
         return super().create(request, *args, **kwargs)
 
     def retrieve(self, request, *args, **kwargs):
         self.serializer_class = ChatRetrieveSerializer
-        return super().retrieve(request, *args, **kwargs)
+        instance = self.get_object()
+        contact_name = None
+        for u in instance.users.all():
+            if u != request.user:
+                try:
+                    contact_name = Contact.objects.get(contact=u,user=request.user).contact_name
+                except:
+                    contact_name = u.get_full_name()
+        serializer = self.get_serializer(instance).data
+        serializer['name'] =contact_name
+        return Response(serializer)
 
 
 class MessageViewSet(viewsets.ModelViewSet):
