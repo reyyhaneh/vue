@@ -4,38 +4,55 @@
       <input v-model="searchQuery" placeholder="Search..." class="search-bar" />
       <ul>
         <li v-for="chat in filteredChats" :key="chat.id" @click="selectChat(chat)">
-          <div class="chat-item">
-            <img src="../assets/profile.png" alt="Profile Picture" class="profile-pic" />
-            <div class="chat-details">
-              <div class="chat-name">{{ chat.name }}</div>
-            </div>
-          </div>
+          {{ chat.name }}
         </li>
       </ul>
     </div>
   </template>
   
   <script>
+  import axios from 'axios';
+  
   export default {
     props: {
-      chats: Array, // Array of chat objects received from the backend
+      // Remove the 'chats' prop
     },
     data() {
       return {
         searchQuery: '',
+        chats: [], // Store chats locally
       };
     },
     computed: {
+  
       filteredChats() {
-        // Filter the chats based on the search query
-        return this.chats.filter(chat => chat.name.toLowerCase().includes(this.searchQuery.toLowerCase()));
+        console.log(this.chats)
+        return this.chats.filter(chat =>
+          chat.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+        );
       },
     },
     methods: {
       selectChat(chat) {
-        // Emit an event to notify the parent component about the selected chat
         this.$emit('select-chat', chat);
       },
+      fetchChats() {
+          const headers = {
+          Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzExOTkwMzcyLCJpYXQiOjE3MDY4MDYzNzIsImp0aSI6IjA3M2FhMzVmZDM5MzRhODBiYzdlOTE2NjY3MzlhNDk0IiwidXNlcl9pZCI6MX0.Y3_X9-XnQ7jQ7H2uNrfTliL3ZA84hjhWIsbetkoahRw`,
+        };
+        // Make a GET request to fetch chats from the Django API
+        axios.get('http://localhost:8000/api/chat/', { headers })
+          .then(response => {
+            this.chats = response.data;
+          })
+          .catch(error => {
+            console.error('Error fetching chats:', error);
+          });
+      },
+    },
+    mounted() {
+      // Fetch chats when the component is mounted
+      this.fetchChats();
     },
   };
   </script>
@@ -67,34 +84,13 @@
     margin-top: 10px;
   }
   
-  .chat-item {
-    display: flex;
-    align-items: center;
-    margin: 5px;
-
+  li {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
   }
   
-  .profile-pic {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-right: 10px;
-  }
-  
-  .chat-details {
-    flex: 1;
-  }
-  
-  .chat-name {
-    font-weight: bold;
-  }
-  
-  .unseen-messages {
-    color: #777;
-    font-size: 0.8em;
-  }
   li:hover {
-  background-color: #e0e0e0;
-}
+    background-color: #e0e0e0;
+  }
   </style>
-  
