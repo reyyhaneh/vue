@@ -15,9 +15,9 @@
           </div>
 
           <div class="chat-col">
-            <div style="margin-top: 20px">{{ chat.last_message.content.slice(0, 15) }}</div>
-            <div style="margin-left: 60px">{{ chat.last_message.created_at }}</div>
-            <div class="unseen-messages" v-if="chat.unseenMessages == 0">{{ chat.unseenMessages }} unseen messages</div>
+                        <div class="unread-count" :style="{ opacity: chat.unread_count > 0 ? 1 : 0 }">{{ chat.unread_count }}</div>
+            <div>{{ chat.last_message.content.slice(0, 15) }}</div>
+            <div>{{ chat.last_message.created_at }}</div>
           </div>
         </div>
 
@@ -131,5 +131,12 @@ img {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+}
+.unread-count{
+  background-color: greenyellow;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+text-align: center;
 }
 </style>

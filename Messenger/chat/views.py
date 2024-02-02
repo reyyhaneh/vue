@@ -46,6 +46,7 @@ class ChatViewSet(mixins.ListModelMixin,
 
         serializer = self.get_serializer(queryset, many=True).data
         for data in serializer:
+            unread_count= Chat.objects.get(id=data['id']).message_set.exclude(sender=request.user).filter(seen=False).count()
             for uid in data['users']:
                 if uid!=request.user.id:
                     contact_user = UserMainInfoSerializer(User.objects.get(id=uid)).data
@@ -55,6 +56,7 @@ class ChatViewSet(mixins.ListModelMixin,
                         contact_name = User.objects.get(id=uid).get_full_name()
                     data['name'] = contact_name
                     data['contact_user'] = contact_user
+                    data['unread_count'] = unread_count
 
         return Response(serializer)
 
@@ -81,6 +83,10 @@ class ChatViewSet(mixins.ListModelMixin,
             msg['sent_by_me'] = False
             if msg['sender'] ==request.user.id:
                 msg['sent_by_me'] = True
+
+        for msg in instance.message_set.exclude(sender=request.user):
+            msg.seen=True
+            msg.save()
         return Response(serializer)
 
 

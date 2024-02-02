@@ -21,6 +21,7 @@ class Message(models.Model):
     sender = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='sent_messages', null=True)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    seen = models.BooleanField(default=False)
 
     def jalali_time(self):
         shamsi_date = jdatetime.fromgregorian(datetime=self.created_at)
