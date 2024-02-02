@@ -2,7 +2,7 @@
 <template>
     <div class="navbar">
       <div class="navbar-left">
-        <router-link to="/profile">
+        <router-link to="/userProfile">
          <img src="../assets/profile.png" alt="Profile Picture" class="profile-pic" />
         </router-link>         </div>
       <div class="navbar-right">
