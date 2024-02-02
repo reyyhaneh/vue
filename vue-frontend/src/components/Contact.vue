@@ -3,7 +3,6 @@
 
 
     <div style="text-align: center">
-      <!-- Display Mode -->
       <img style="width: 100px; height: 100px; border-radius: 50%" :src="user.image" alt="Profile Picture"
            class="profile-picture"/>
 
@@ -13,15 +12,15 @@
       <p>Bio: {{ user.bio }}</p>
 
       <div class="profile-options">
-        <!-- Add to contacts / Follow button -->
         <div>
           <input style="margin: 10px" v-show="!user.cid" v-model="user.contact_name" name="contact_name"
                  type="text"/>
 
-                 </div>
+        </div>
         <div>
 
-          <button style="margin: 10px"v-show="!user.cid" @click="addToContactsOrFollow">Add to Contacts / Follow</button>
+          <button style="margin: 10px" v-show="!user.cid" @click="addToContactsOrFollow">Add to Contacts / Follow
+          </button>
 
         </div>
         <div>
@@ -106,7 +105,6 @@ export default {
 </script>
 
 <style scoped>
-/* Add your styling here */
 .profile-page {
   padding: 20px;
 }

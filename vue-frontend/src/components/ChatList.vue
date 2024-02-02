@@ -7,15 +7,15 @@
       <li v-for="chat in filteredChats" :key="chat.id" @click="selectChat(chat)">
         <div class="chat-row">
           <div class="chat-col">
-<div @click="selectContact(chat)">
-              <img  :src="chat.contact_user.image || '/src/assets/profile.png'" alt="Profile Picture"
+            <div @click="selectContact(chat)">
+              <img :src="chat.contact_user.image || '/src/assets/profile.png'" alt="Profile Picture"
                    class="profile-pic"/>
             </div>
             <div class="chat-name">{{ chat.name }}</div>
           </div>
 
           <div class="chat-col">
-                        <div class="unread-count" :style="{ opacity: chat.unread_count > 0 ? 1 : 0 }">{{ chat.unread_count }}</div>
+            <div class="unread-count" :style="{ opacity: chat.unread_count > 0 ? 1 : 0 }">{{ chat.unread_count }}</div>
             <div>{{ chat.last_message.content.slice(0, 15) }}</div>
             <div>{{ chat.last_message.created_at }}</div>
           </div>
@@ -31,13 +31,11 @@ import axios from 'axios';
 
 export default {
 
-  props: {
-    // Remove the 'chats' prop
-  },
+  props: {},
   data() {
     return {
       searchQuery: '',
-      chats: [], // Store chats locally
+      chats: [],
     };
   },
   computed: {
@@ -54,18 +52,17 @@ export default {
       this.$emit('select-chat', chat);
     },
     selectContact(chat) {
-        const uid =     localStorage.getItem('uid')
-         const token = localStorage.getItem('jwtToken');
+      const uid = localStorage.getItem('uid')
+      const token = localStorage.getItem('jwtToken');
 
       const headers = {
         Authorization: `Bearer ${token}`,
       };
-      // Make a GET request to fetch chats from the Django API
-      axios.get('http://localhost:8000/api/getchatcontact/'+chat.id+'/', {headers})
+      axios.get('http://localhost:8000/api/getchatcontact/' + chat.id + '/', {headers})
           .then(response => {
-            localStorage.setItem('contact',JSON.stringify(response.data))
+            localStorage.setItem('contact', JSON.stringify(response.data))
             console.log(response.data)
-                  this.$router.push('/profile');
+            this.$router.push('/profile');
 
           })
     },
@@ -76,7 +73,6 @@ export default {
       const headers = {
         Authorization: `Bearer ${token}`,
       };
-      // Make a GET request to fetch chats from the Django API
       axios.get('http://localhost:8000/api/chat/', {headers})
           .then(response => {
             this.chats = response.data;
@@ -87,17 +83,15 @@ export default {
     },
   },
   mounted() {
-    // Fetch chats when the component is mounted
     this.fetchChats();
   },
 };
 </script>
 
 <style scoped>
-/* Add your styling here */
 .chat-list {
   position: fixed;
-  top: 62px; /* Adjust based on the height of your navbar */
+  top: 62px;
   left: 0;
   bottom: 0;
   width: 20%;
@@ -149,11 +143,12 @@ img {
   flex-direction: row;
   justify-content: space-between;
 }
-.unread-count{
+
+.unread-count {
   background-color: greenyellow;
   border-radius: 50%;
   width: 20px;
   height: 20px;
-text-align: center;
+  text-align: center;
 }
 </style>

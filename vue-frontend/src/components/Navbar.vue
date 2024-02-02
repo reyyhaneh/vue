@@ -24,12 +24,11 @@ export default {
       this.$router.push('/login');
     },
     deleteAccount() {
-      // Implement your delete account logic here
     },
     profile() {
       this.$router.push('/userProfile');
 
-    } ,contact() {
+    }, contact() {
       this.$router.push('/contact');
 
     }

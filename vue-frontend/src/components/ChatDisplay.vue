@@ -52,13 +52,13 @@ import axios from 'axios';
 
 export default {
   props: {
-    selectedChat: Object, // The selected chat object
+    selectedChat: Object,
   },
   data() {
     return {
-      newMessage: '', // Input for typing a new message
+      newMessage: '',
       hoveredMessageId: null,
-      editMode: false, // Add edit mode flag
+      editMode: false,
     };
   },
   methods: {
@@ -93,13 +93,13 @@ export default {
       element.classList.add('msg-edit');
       this.editMode = !this.editMode;
 
-       const token = localStorage.getItem('jwtToken');
+      const token = localStorage.getItem('jwtToken');
       const headers = {
         Authorization: `Bearer ${token}`,
       };
 
       axios
-          .put('api/chat/' + this.selectedChat.id + '/message/'+messageId+'/', {content: this.newMessage,}, {headers})
+          .put('api/chat/' + this.selectedChat.id + '/message/' + messageId + '/', {content: this.newMessage,}, {headers})
       this.newMessage = '';
     },
     deleteMessage(messageId) {
@@ -116,7 +116,6 @@ export default {
 </script>
 
 <style scoped>
-/* Your existing styles */
 .chat-display {
   padding: 20px;
   right: 0;

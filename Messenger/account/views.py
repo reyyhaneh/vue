@@ -107,9 +107,9 @@ class ChatContact(APIView):
         chat = None
         for c in Chat.objects.all():
             if request.user in c.users.all() and c_user in c.users.all():
-                chat = c
+                chat = c.id
         ser = UserMainInfoSerializer(c_user).data
-        ser['chat'] = chat.id
+        ser['chat'] = chat
         try:
             c=Contact.objects.filter(user=request.user, contact=c_user).first()
             ser['contact_name'] = c.contact_name

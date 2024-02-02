@@ -1,9 +1,6 @@
 <template>
   <div class="profile-page">
-
-
     <div style="text-align: center">
-      <!-- Display Mode -->
       <img style="width: 100px; height: 100px; border-radius: 50%" :src="user.image" alt="Profile Picture"
            class="profile-picture"/>
 
@@ -13,19 +10,22 @@
       <p>Bio: {{ user.bio }}</p>
 
       <div class="profile-options">
-        <!-- Add to contacts / Follow button -->
         <div>
           <input style="margin: 10px" v-show="!user.cid" v-model="user.contact_name" name="contact_name"
                  type="text"/>
 
-                 </div>
+        </div>
         <div>
 
-          <button style="margin: 10px"v-show="!user.cid" @click="addToContactsOrFollow">Add to Contacts / Follow</button>
+          <button style="margin: 10px" v-show="!user.cid" @click="addToContactsOrFollow">Add to Contacts / Follow
+          </button>
 
         </div>
         <div>
-          <button style="margin: 10px" @click="deleteChat">Delete Chat</button>
+          <button style="margin: 10px" v-show="user.chat" @click="deleteChat">Delete Chat</button>
+
+        </div> <div>
+          <button style="margin: 10px" v-show="!user.chat" @click="newChat">New Chat</button>
 
         </div>
         <div>
@@ -90,6 +90,16 @@ export default {
       this.$router.push('/userprofile');
 
     },
+     newChat() {
+      const token = localStorage.getItem('jwtToken');
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+      const res =  axios.post('api/chat/',{users:[this.user.id]} ,{headers})
+
+      this.$router.push('/');
+
+    },
     deleteFromContacts() {
       const token = localStorage.getItem('jwtToken');
       const uid = localStorage.getItem('uid');
@@ -106,7 +116,6 @@ export default {
 </script>
 
 <style scoped>
-/* Add your styling here */
 .profile-page {
   padding: 20px;
 }

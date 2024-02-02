@@ -1,31 +1,32 @@
 <template>
   <form @submit.prevent="submitForm" class="signup-form">
     <label for="first_name">First Name:</label>
-    <input v-model="form.first_name" name="first_name" type="text" required />
+    <input v-model="form.first_name" name="first_name" type="text" required/>
 
     <label for="last_name">Last Name:</label>
-    <input v-model="form.last_name" name="last_name" type="text" required />
+    <input v-model="form.last_name" name="last_name" type="text" required/>
 
     <label for="phone">Phone:</label>
-    <input v-model="form.phone" name="phone" type="text" required :class="{ 'error': !isPhoneValid }" />
+    <input v-model="form.phone" name="phone" type="text" required :class="{ 'error': !isPhoneValid }"/>
     <div v-if="!isPhoneValid">
       <p class="error-message">Phone must be exactly 11 digits long, start with 0, and consist of digits only.</p>
     </div>
 
     <label for="username">Username:</label>
-    <input v-model="form.username" name="username" type="text" required :class="{ 'error': !isUsernameUnique }" />
+    <input v-model="form.username" name="username" type="text" required :class="{ 'error': !isUsernameUnique }"/>
     <div v-if="!isUsernameUnique">
       <p class="error-message">Username is already taken. Please choose a different one.</p>
     </div>
 
     <label for="password">Password:</label>
-    <input v-model="form.password" name="password" type="password" required :class="{ 'error': isPasswordInvalid }" />
+    <input v-model="form.password" name="password" type="password" required :class="{ 'error': isPasswordInvalid }"/>
     <div v-if="isPasswordInvalid">
       <p class="error-message">Password must be at least 8 characters long.</p>
     </div>
 
     <label for="image">Image:</label>
-    <input ref="imageInput" name="image" type="file" accept="image/*" @change="handleImageChange" :class="{ 'error': !isImageValid }" />
+    <input ref="imageInput" name="image" type="file" accept="image/*" @change="handleImageChange"
+           :class="{ 'error': !isImageValid }"/>
     <div v-if="!isImageValid">
       <p class="error-message">Please select a valid image file.</p>
     </div>
@@ -33,7 +34,7 @@
     <label for="bio">Bio:</label>
     <textarea v-model="form.bio" name="bio" required></textarea>
 
-     <router-link to="/login" class="login-link">Already have an account? Log In</router-link>
+    <router-link to="/login" class="login-link">Already have an account? Log In</router-link>
   </form>
 </template>
 
@@ -116,24 +117,20 @@ export default {
       if (this.isUsernameUnique && this.isPhoneUnique && !this.isPasswordInvalid && this.isImageValid) {
         try {
           this.loading = true;
-           const formData = new FormData();
-      formData.append('first_name', this.form.first_name);
-      formData.append('last_name', this.form.last_name);
-      formData.append('phone', this.form.phone);
-      formData.append('username', this.form.username);
-      formData.append('password', this.form.password);
-      formData.append('image', this.form.image);
-      formData.append('bio', this.form.bio);
+          const formData = new FormData();
+          formData.append('first_name', this.form.first_name);
+          formData.append('last_name', this.form.last_name);
+          formData.append('phone', this.form.phone);
+          formData.append('username', this.form.username);
+          formData.append('password', this.form.password);
+          formData.append('image', this.form.image);
+          formData.append('bio', this.form.bio);
 
-      const response = await axios.post('/api/register/', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-          // const jwtToken = response.data.token;
-          // localStorage.setItem('jwtToken', jwtToken);
-
+          const response = await axios.post('/api/register/', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
           this.$router.push('/login');
         } catch (error) {
           console.error('Error registering user:', error);
