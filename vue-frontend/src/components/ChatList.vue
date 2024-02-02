@@ -7,10 +7,10 @@
       <li v-for="chat in filteredChats" :key="chat.id" @click="selectChat(chat)">
         <div class="chat-row">
           <div class="chat-col">
-            <router-link to="/profile">
-              <img :src="chat.contact_user.image || '/src/assets/profile.png'" alt="Profile Picture"
+<div @click="selectContact(chat)">
+              <img  :src="chat.contact_user.image || '/src/assets/profile.png'" alt="Profile Picture"
                    class="profile-pic"/>
-            </router-link>
+            </div>
             <div class="chat-name">{{ chat.name }}</div>
           </div>
 
@@ -53,6 +53,23 @@ export default {
     selectChat(chat) {
       this.$emit('select-chat', chat);
     },
+    selectContact(chat) {
+        const uid =     localStorage.getItem('uid')
+         const token = localStorage.getItem('jwtToken');
+
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+      // Make a GET request to fetch chats from the Django API
+      axios.get('http://localhost:8000/api/getchatcontact/'+chat.id+'/', {headers})
+          .then(response => {
+            localStorage.setItem('contact',JSON.stringify(response.data))
+            console.log(response.data)
+                  this.$router.push('/profile');
+
+          })
+    },
+
     fetchChats() {
       const token = localStorage.getItem('jwtToken');
 

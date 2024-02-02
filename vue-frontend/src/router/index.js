@@ -4,6 +4,7 @@ import SignUp from '../components/SignUp.vue'
 import Login from '../components/Login.vue'
 import Profile from '../components/Profile.vue'
 import UserProfile from '../components/UserProfile.vue'
+import Contact from "@/components/Contact.vue";
 
 
 
@@ -34,6 +35,10 @@ const router = createRouter({
       path: '/userProfile',
       name: 'userProfile',
       component: UserProfile,
+    }, {
+      path: '/contact',
+      name: 'contact',
+      component: Contact,
     }
   ]
 })

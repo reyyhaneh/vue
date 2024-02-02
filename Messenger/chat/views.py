@@ -1,6 +1,7 @@
 from rest_framework import generics, status, permissions, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import viewsets, mixins
 
@@ -46,9 +47,10 @@ class ChatViewSet(mixins.ListModelMixin,
 
         serializer = self.get_serializer(queryset, many=True).data
         for data in serializer:
-            unread_count= Chat.objects.get(id=data['id']).message_set.exclude(sender=request.user).filter(seen=False).count()
+            unread_count = Chat.objects.get(id=data['id']).message_set.exclude(sender=request.user).filter(
+                seen=False).count()
             for uid in data['users']:
-                if uid!=request.user.id:
+                if uid != request.user.id:
                     contact_user = UserMainInfoSerializer(User.objects.get(id=uid)).data
                     try:
                         contact_name = Contact.objects.get(contact__id=uid, user=request.user).contact_name
@@ -72,20 +74,20 @@ class ChatViewSet(mixins.ListModelMixin,
             if u != request.user:
                 contact_user = UserMainInfoSerializer(u).data
                 try:
-                    contact_name = Contact.objects.get(contact=u,user=request.user).contact_name
+                    contact_name = Contact.objects.get(contact=u, user=request.user).contact_name
                 except:
                     contact_name = u.get_full_name()
         serializer = self.get_serializer(instance).data
-        serializer['name'] =contact_name
-        serializer['contact_user'] =contact_user
+        serializer['name'] = contact_name
+        serializer['contact_user'] = contact_user
 
         for msg in serializer['messages']:
             msg['sent_by_me'] = False
-            if msg['sender'] ==request.user.id:
+            if msg['sender'] == request.user.id:
                 msg['sent_by_me'] = True
 
         for msg in instance.message_set.exclude(sender=request.user):
-            msg.seen=True
+            msg.seen = True
             msg.save()
         return Response(serializer)
 
@@ -120,3 +122,19 @@ class MessageViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         instance = serializer.save()
         return Response(MessageSerializer(instance).data)
+
+
+class ChatContact(APIView):
+    def get(self, request, pk):
+        chat = Chat.objects.get(id=pk)
+        c_user = chat.users.exclude(id=request.user.id).first()
+        ser = UserMainInfoSerializer(c_user).data
+        ser['chat'] = chat.id
+        try:
+            c=Contact.objects.filter(user=request.user, contact=c_user).first()
+            ser['contact_name'] = c.contact_name
+            ser['cid'] = c.id
+        except:
+            ser['contact_name'] = None
+            ser['cid'] = None
+        return Response(ser)

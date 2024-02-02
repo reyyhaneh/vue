@@ -9,7 +9,7 @@
     <label for="phone">Phone:</label>
     <input v-model="form.phone" name="phone" type="text" required :class="{ 'error': !isPhoneValid }" />
     <div v-if="!isPhoneValid">
-      <p class="error-message">Phone must be exactly 13 digits long, start with 0, and consist of digits only.</p>
+      <p class="error-message">Phone must be exactly 11 digits long, start with 0, and consist of digits only.</p>
     </div>
 
     <label for="username">Username:</label>
@@ -33,8 +33,7 @@
     <label for="bio">Bio:</label>
     <textarea v-model="form.bio" name="bio" required></textarea>
 
-    <button type="submit" :disabled="loading">Sign Up</button>
-    <router-link to="/login" class="login-link">Already have an account? Log In</router-link>
+     <router-link to="/login" class="login-link">Already have an account? Log In</router-link>
   </form>
 </template>
 

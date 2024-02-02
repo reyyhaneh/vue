@@ -9,6 +9,7 @@ message_router.register('', MessageViewSet, basename='message')
 urlpatterns = [
     path('api/chat/', include(chat_router.urls)),
     path('api/chat/<int:chat_id>/message/', include(message_router.urls)),
+    path('api/getchatcontact/<int:pk>/', ChatContact.as_view(), name='register'),
     # path('api/chats/<int:chat_id>/', ChatDetailView.as_view(), name='chat-detail'),
     # path('api/chats/<int:chat_id>/messages/<int:message_id>/', MessageDetailView.as_view(), name='message-detail'),
 ]

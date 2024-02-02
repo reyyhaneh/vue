@@ -79,7 +79,7 @@ export default {
         "contact_name": this.user.contact_name,
         "contact": this.user.id,
       }, {headers})
-      this.$router.push('/userprofile');
+      this.$router.push('/');
     },
     deleteChat() {
       const token = localStorage.getItem('jwtToken');
@@ -87,7 +87,7 @@ export default {
         Authorization: `Bearer ${token}`,
       };
       axios.delete('api/chat/' + this.user.chat + '/', {headers})
-      this.$router.push('/userprofile');
+      this.$router.push('/');
 
     },
     deleteFromContacts() {
@@ -97,7 +97,7 @@ export default {
         Authorization: `Bearer ${token}`,
       };
       axios.delete('api/users/' + uid + '/contacts/' + this.user.cid + '/', {headers})
-      this.$router.push('/userprofile');
+      this.$router.push('/');
 
     },
   }

@@ -6,6 +6,10 @@ from .models import User, Contact
 
 
 class UserSerializer(serializers.ModelSerializer):
+    contacts = serializers.SerializerMethodField()
+
+    def get_contacts(self,obj):
+        return ContactRetrieveSerializer(Contact.objects.filter(user=obj),many=True).data
     class Meta:
         model = User
         fields = '__all__'
@@ -21,7 +25,7 @@ class UserMainInfoSerializer(UserSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'image']
+        fields = ['id', 'username', 'first_name', 'last_name', 'image','phone','bio']
 
 
 class RegisterSerializer(UserSerializer):
