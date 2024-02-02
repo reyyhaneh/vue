@@ -16,7 +16,7 @@ def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
 
     return {
-        'uid':user.id   ,
+        'uid': user.id,
         'refresh': str(refresh),
         'access': str(refresh.access_token),
     }
@@ -79,8 +79,8 @@ class ContactViewSet(viewsets.ModelViewSet):
         super().check_permissions(request)
 
     def get_queryset(self):
-        if self.action in ['get', 'list','retrieve']:
-            self.serializer_class=ContactRetrieveSerializer
+        if self.action in ['get', 'list', 'retrieve']:
+            self.serializer_class = ContactRetrieveSerializer
         return Contact.objects.filter(user=self.request.user)
 
     serializer_class = ContactSerializer
@@ -88,15 +88,16 @@ class ContactViewSet(viewsets.ModelViewSet):
 
 class CheckUsernameAPI(APIView):
     permission_classes = [AllowAny]
-    def post(self,request):
-        return Response({'unique':User.objects.filter(username=request.data['username']).exists() == False})
 
+    def post(self, request):
+        return Response({'unique': User.objects.filter(username=request.data['username']).exists() == False})
 
 
 class CheckPhoneAPI(APIView):
     permission_classes = [AllowAny]
-    def post(self,request):
-        return Response({'unique':User.objects.filter(phone=request.data['phone']).exists() == False})
+
+    def post(self, request):
+        return Response({'unique': User.objects.filter(phone=request.data['phone']).exists() == False})
 
 
 class ChatContact(APIView):
@@ -111,11 +112,26 @@ class ChatContact(APIView):
         ser = UserMainInfoSerializer(c_user).data
         ser['chat'] = chat
         try:
-            c=Contact.objects.filter(user=request.user, contact=c_user).first()
+            c = Contact.objects.filter(user=request.user, contact=c_user).first()
             ser['contact_name'] = c.contact_name
             ser['cid'] = c.id
         except:
             ser['contact_name'] = None
             ser['cid'] = None
         return Response(ser)
+
+
+class AddContact(APIView):
+    def post(self, request):
+        contact_name = request.data['contact_name']
+        username = request.data['username']
+        if not User.objects.filter(username=username).exists:
+            raise ValidationError({'message':'username does not exist'},code=400)
+        try:
+            c = Contact.objects.create(user=request.user, contact_name=contact_name,
+                                   contact=User.objects.get(username=username))
+        except:
+            raise ValidationError({'message':'cpntact name must be unique'},code=400)
+
+        return Response(ContactRetrieveSerializer(c).data)
 

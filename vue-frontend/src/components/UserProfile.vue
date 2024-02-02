@@ -49,14 +49,14 @@
 
       <button @click="toggleEditMode">Edit Profile</button>
       <div>
-        <input style="margin: 10px;  width: 20%" v-model="contact_name" name="contact_name"
+        <input style="margin: 10px;  width: 20%" v-model="c_username" name="c_username"
                placeholder="username"
 
                type="text"/>
 
       </div>
       <div>
-        <input style="margin: 10px; width: 20%" v-model="contact_name" name="contact_name"
+        <input style="margin: 10px; width: 20%" v-model="c_name" name="c_name"
                placeholder="contact name"
 
                type="text"/>
@@ -64,8 +64,10 @@
       </div>
       <div>
 
-        <button style="margin: 10px" v-show="!user.cid" @click="addToContactsOrFollow">search user</button>
-
+        <button style="margin: 10px" v-show="!user.cid" @click="addContact">add contact</button>
+ <div v-if="!isContactValid">
+      <p class="error-message">username is wrong or contact already exists</p>
+    </div>
       </div>
       <div class="signup-form">
         <br/>
@@ -111,11 +113,31 @@ export default {
       isPhoneValid: true,
       isImageValid: true,
       loading: false,
-      contact_name: '',
-      contact: ''
+      c_name: '',
+      c_username: '',
+      isContactValid: true,
     };
   },
   methods: {
+        addContact() {
+      const token = localStorage.getItem('jwtToken');
+      const uid = localStorage.getItem('uid');
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+      const response = axios.post('api/addcontact/', {
+        "contact_name": this.c_name,
+        "username": this.c_username,
+      }, {headers})
+
+        if (response.data.hasOwnProperty('message')) {
+          this.isContactValid = false
+        }
+
+      this.$router.push('/userprofile');
+    },
+
+
     addToContactsOrFollow() {
       const token = localStorage.getItem('jwtToken');
       const uid = localStorage.getItem('uid');

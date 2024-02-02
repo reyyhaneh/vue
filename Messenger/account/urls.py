@@ -20,5 +20,6 @@ urlpatterns = [
     path('api/checkphone/', CheckPhoneAPI.as_view()),
 
     path('api/getcontact/<int:pk>/', ChatContact.as_view(), name='register'),
+    path('api/addcontact/', AddContact.as_view(), name='register'),
 
 ]

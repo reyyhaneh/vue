@@ -34,6 +34,7 @@
     <label for="bio">Bio:</label>
     <textarea v-model="form.bio" name="bio" required></textarea>
 
+    <button type="submit" :disabled="loading">Sign Up</button>
     <router-link to="/login" class="login-link">Already have an account? Log In</router-link>
   </form>
 </template>
