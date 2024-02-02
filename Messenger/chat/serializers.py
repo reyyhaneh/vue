@@ -38,7 +38,7 @@ class ChatRetrieveSerializer(ChatSerializer):
     users = serializers.SerializerMethodField()
 
     def get_messages(self,obj):
-        return MessageSerializer(obj.message_set.all(),many=True).data
+        return MessageRetrieveSerializer(obj.message_set.all(),many=True).data
     def get_users(self,obj):
         return UserMainInfoSerializer(obj.users.all(),many=True).data
     class Meta:
@@ -53,6 +53,18 @@ class MessageSerializer(serializers.ModelSerializer):
 
     def get_created_at(self,obj):
         return obj.jalali_time()
+    class Meta:
+        model = Message
+        fields = '__all__'
+
+class MessageRetrieveSerializer(MessageSerializer):
+    sender= serializers.SerializerMethodField()
+    receiver= serializers.SerializerMethodField()
+    def get_sender(self,obj):
+        return UserMainInfoSerializer(obj.sender).data
+    def get_receiver(self,obj):
+        return UserMainInfoSerializer(obj.chat.users.exclude(id=obj.sender.id).first()).data
+
     class Meta:
         model = Message
         fields = '__all__'

@@ -39,7 +39,7 @@ export default {
           const token =response.data.access;
           const uid = response.data.uid;
           localStorage.setItem('jwtToken', token);
-          localStorage.setItem('uid', token);
+          localStorage.setItem('uid', uid);
           this.$router.push('/');
           // console.log(token)
         } else {
